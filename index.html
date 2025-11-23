@@ -1,0 +1,1348 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Write to Your Elf! 🎄</title>
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <style>
+        @keyframes snowfall {
+            0% { transform: translateY(-10px) translateX(0); }
+            100% { transform: translateY(100vh) translateX(100px); }
+        }
+        .snowflake {
+            position: fixed;
+            top: -10px;
+            font-size: 1.5em;
+            pointer-events: none;
+            animation: snowfall linear infinite;
+            z-index: 1000;
+        }
+        @keyframes elfBounce {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-20px); }
+        }
+        .elf-bounce {
+            animation: elfBounce 2s ease-in-out infinite;
+        }
+        .letter-paper {
+            background: linear-gradient(to bottom, #fef9e7 0%, #fff9e6 100%);
+            box-shadow: 0 8px 16px rgba(0,0,0,0.2);
+        }
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+        .pulse-button {
+            animation: pulse 2s ease-in-out infinite;
+        }
+    </style>
+</head>
+<body class="bg-gradient-to-br from-red-600 via-green-600 to-red-700 min-h-screen overflow-x-hidden">
+    
+    <!-- Snowflakes -->
+    <div id="snowflakes"></div>
+
+    <!-- Main App Container -->
+    <div id="app" class="container mx-auto px-4 py-8 max-w-6xl relative z-10">
+        
+        <!-- Kid's First Letter Page -->
+        <div id="kidFirstLetter" class="max-w-4xl mx-auto">
+            <!-- Parent Sign Up & Child Login Buttons -->
+            <div class="flex justify-between items-center mb-4">
+                <button onclick="showPage('childLogin')" class="bg-gradient-to-r from-red-500 to-pink-500 hover:from-red-600 hover:to-pink-600 text-white font-bold py-3 px-6 rounded-full shadow-lg border-2 border-yellow-400 text-lg">
+                    🎅 Child Login Here
+                </button>
+                <button onclick="showPage('parentLogin')" class="bg-white hover:bg-gray-100 text-green-700 font-bold py-3 px-6 rounded-full shadow-lg border-2 border-green-600 text-lg">
+                    👨‍👩‍👧 Parent Sign Up Here
+                </button>
+            </div>
+            
+            <!-- Christmas decorations -->
+            <div class="text-center mb-6">
+                <div class="text-9xl elf-bounce mb-4">🧝</div>
+                <h1 class="text-6xl md:text-7xl font-bold text-white mb-4 drop-shadow-lg">
+                    ✨ Write to Your Elf! ✨
+                </h1>
+                <p class="text-2xl md:text-3xl text-yellow-200 font-bold drop-shadow">
+                    Send a letter to the North Pole!
+                </p>
+            </div>
+
+            <!-- Letter Writing Area -->
+            <div class="letter-paper rounded-3xl p-8 md:p-12 border-8 border-red-500">
+                <div class="flex justify-center gap-4 mb-6">
+                    <span class="text-5xl">🎄</span>
+                    <span class="text-5xl">🎁</span>
+                    <span class="text-5xl">⭐</span>
+                    <span class="text-5xl">🎅</span>
+                    <span class="text-5xl">🎄</span>
+                </div>
+
+                <h2 class="text-3xl md:text-4xl font-bold text-center text-red-600 mb-6">
+                    Dear Elf,
+                </h2>
+
+                <textarea 
+                    id="firstLetterContent" 
+                    rows="12" 
+                    class="w-full p-6 border-4 border-green-400 rounded-2xl text-2xl focus:outline-none focus:ring-4 focus:ring-red-400 bg-white font-handwriting" 
+                    placeholder="Write your letter here...
+
+Tell your elf about yourself! What do you like to do? What makes you happy?"
+                    style="font-family: 'Comic Sans MS', cursive, sans-serif; line-height: 1.8;"
+                ></textarea>
+
+                <div class="flex justify-center gap-4 mt-6 mb-4">
+                    <span class="text-5xl">🌟</span>
+                    <span class="text-5xl">❄️</span>
+                    <span class="text-5xl">🎀</span>
+                    <span class="text-5xl">❄️</span>
+                    <span class="text-5xl">🌟</span>
+                </div>
+
+                <button 
+                    onclick="sendFirstLetter()" 
+                    class="w-full bg-gradient-to-r from-red-600 to-green-600 hover:from-red-700 hover:to-green-700 text-white font-bold py-8 px-12 rounded-3xl text-4xl shadow-2xl transform hover:scale-105 transition pulse-button border-4 border-yellow-400"
+                >
+                    🎅 SEND TO ELF! 🎄
+                </button>
+
+                <p class="text-center text-gray-600 mt-6 text-lg">
+                    Click the button to send your letter to the North Pole! ✨
+                </p>
+            </div>
+
+            <!-- Christmas decorations bottom -->
+            <div class="text-center mt-8 text-6xl space-x-4">
+                <span>🎁</span>
+                <span>🎄</span>
+                <span>⛄</span>
+                <span>🎄</span>
+                <span>🎁</span>
+            </div>
+        </div>
+
+        <!-- Parent Signup with Pricing -->
+        <div id="parentSignup" class="hidden">
+            <div class="bg-white rounded-3xl shadow-2xl p-8 max-w-6xl mx-auto">
+                <div class="text-center mb-8">
+                    <h2 class="text-4xl font-bold text-green-700 mb-4">✨ Letter Sent! ✨</h2>
+                    <p class="text-xl text-gray-700 mb-2">Your child's letter is waiting to be answered!</p>
+                    <p class="text-lg text-gray-600">Parents: Choose a plan below to bring the magic to life!</p>
+                </div>
+
+                <!-- Pricing Plans -->
+                <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+                    <div class="border-2 border-green-300 rounded-xl p-6 hover:shadow-xl transition">
+                        <h3 class="text-2xl font-bold mb-2 text-center text-green-700">Monthly</h3>
+                        <p class="text-4xl font-bold text-green-600 mb-2 text-center">$9.99</p>
+                        <p class="text-sm text-gray-600 mb-4 text-center">per month</p>
+                        <ul class="text-left space-y-2 mb-6 text-sm">
+                            <li class="flex items-start"><span class="text-green-600 mr-2">✓</span> <span>Unlimited letters</span></li>
+                            <li class="flex items-start"><span class="text-green-600 mr-2">✓</span> <span>AI elf responses</span></li>
+                            <li class="flex items-start"><span class="text-green-600 mr-2">✓</span> <span>Daily quotes</span></li>
+                            <li class="flex items-start"><span class="text-green-600 mr-2">✓</span> <span>Parent manual mode</span></li>
+                            <li class="flex items-start"><span class="text-green-600 mr-2">✓</span> <span>Certificates</span></li>
+                        </ul>
+                        <button onclick="selectPlan('monthly')" class="w-full bg-green-600 hover:bg-green-700 text-white py-3 rounded-lg font-bold">Choose Monthly</button>
+                    </div>
+                    <div class="border-4 border-blue-500 rounded-xl p-6 transform scale-105 shadow-2xl bg-blue-50">
+                        <div class="bg-blue-600 text-white px-3 py-1 rounded-full text-xs inline-block mb-2">⭐ BEST VALUE ⭐</div>
+                        <h3 class="text-2xl font-bold mb-2 text-center text-blue-700">3-Month</h3>
+                        <p class="text-4xl font-bold text-blue-600 mb-2 text-center">$24.99</p>
+                        <p class="text-sm text-gray-600 mb-1 text-center">total ($8.33/month)</p>
+                        <p class="text-xs text-green-600 font-bold mb-3 text-center">Save 17%!</p>
+                        <ul class="text-left space-y-2 mb-6 text-sm">
+                            <li class="flex items-start"><span class="text-blue-600 mr-2">✓</span> <span>Everything in Monthly</span></li>
+                            <li class="flex items-start"><span class="text-blue-600 mr-2">✓</span> <span><strong>3 video messages</strong></span></li>
+                            <li class="flex items-start"><span class="text-blue-600 mr-2">✓</span> <span>Perfect for the season!</span></li>
+                        </ul>
+                        <button onclick="selectPlan('3month')" class="w-full bg-blue-600 hover:bg-blue-700 text-white py-3 rounded-lg font-bold">Choose 3-Month</button>
+                    </div>
+                    <div class="border-2 border-purple-400 rounded-xl p-6 hover:shadow-xl transition">
+                        <h3 class="text-2xl font-bold mb-2 text-center text-purple-700">Yearly</h3>
+                        <p class="text-4xl font-bold text-purple-600 mb-2 text-center">$99.99</p>
+                        <p class="text-sm text-gray-600 mb-1 text-center">total ($8.33/month)</p>
+                        <p class="text-xs text-green-600 font-bold mb-3 text-center">Save 17%!</p>
+                        <ul class="text-left space-y-2 mb-6 text-sm">
+                            <li class="flex items-start"><span class="text-purple-600 mr-2">✓</span> <span>Everything in Monthly</span></li>
+                            <li class="flex items-start"><span class="text-purple-600 mr-2">✓</span> <span><strong>12 video messages</strong></span></li>
+                            <li class="flex items-start"><span class="text-purple-600 mr-2">✓</span> <span>Year-round magic</span></li>
+                        </ul>
+                        <button onclick="selectPlan('yearly')" class="w-full bg-purple-600 hover:bg-purple-700 text-white py-3 rounded-lg font-bold">Choose Yearly</button>
+                    </div>
+                    <div class="border-4 border-yellow-500 rounded-xl p-6 hover:shadow-xl transition bg-gradient-to-br from-yellow-50 to-orange-50">
+                        <div class="bg-gradient-to-r from-yellow-500 to-orange-500 text-white px-3 py-1 rounded-full text-xs inline-block mb-2">🎁 LIFETIME 🎁</div>
+                        <h3 class="text-2xl font-bold mb-2 text-center text-orange-700">Forever</h3>
+                        <p class="text-4xl font-bold text-orange-600 mb-2 text-center">$249.99</p>
+                        <p class="text-sm text-gray-600 mb-1 text-center">one-time payment</p>
+                        <p class="text-xs text-green-600 font-bold mb-3 text-center">Never pay again!</p>
+                        <ul class="text-left space-y-2 mb-6 text-sm">
+                            <li class="flex items-start"><span class="text-orange-600 mr-2">✓</span> <span>Everything included</span></li>
+                            <li class="flex items-start"><span class="text-orange-600 mr-2">✓</span> <span><strong>Unlimited videos</strong></span></li>
+                            <li class="flex items-start"><span class="text-orange-600 mr-2">✓</span> <span>Use forever!</span></li>
+                        </ul>
+                        <button onclick="selectPlan('lifetime')" class="w-full bg-gradient-to-r from-yellow-500 to-orange-500 hover:from-yellow-600 hover:to-orange-600 text-white py-3 rounded-lg font-bold">Get Lifetime</button>
+                    </div>
+                </div>\n\n                <!-- Signup Form -->\n                <div id="signupFormSection" class="hidden max-w-md mx-auto">\n                    <h3 class="text-2xl font-bold text-center mb-6">Complete Your Account</h3>\n                    <div class="mb-4">\n                        <label class="block text-gray-700 mb-2 font-semibold">Your Email</label>\n                        <input type="email" id="parentSignupEmail" class="w-full px-4 py-3 border-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500" placeholder="parent@email.com">\n                    </div>\n                    <div class="mb-4">\n                        <label class="block text-gray-700 mb-2 font-semibold">Create Password</label>\n                        <input type="password" id="parentSignupPassword" class="w-full px-4 py-3 border-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500" placeholder="••••••••">\n                    </div>\n                    <div class="mb-4">\n                        <label class="block text-gray-700 mb-2 font-semibold">Child's Name</label>\n                        <input type="text" id="parentSignupChildName" class="w-full px-4 py-3 border-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500" placeholder="Enter your child's name">\n                    </div>\n                    <div class="mb-6">\n                        <p class="text-sm text-gray-600 mb-2">Selected Plan: <strong id="selectedPlanDisplay">-</strong></p>\n                        <input type="hidden" id="selectedPlanInput">\n                    </div>\n                    <button onclick="completeSignup()" class="w-full bg-gradient-to-r from-green-600 to-red-600 hover:from-green-700 hover:to-red-700 text-white font-bold py-4 rounded-lg text-xl mb-3">🎄 Complete Signup & Pay 🎄</button>\n                    <button onclick="showPage('kidFirstLetter')" class="w-full bg-gray-200 hover:bg-gray-300 text-gray-800 py-2 rounded-lg">← Back</button>\n                </div>\n            </div>\n        </div>
+
+        <!-- Parent Login -->
+        <div id="parentLogin" class="hidden">
+            <div class="bg-white rounded-3xl shadow-2xl p-8 max-w-md mx-auto">
+                <button onclick="showPage('landingPage')" class="mb-4 text-gray-600 hover:text-gray-800">← Back</button>
+                <h2 class="text-3xl font-bold text-center mb-6 text-green-700">Parent Portal</h2>
+                
+                <div id="parentLoginForm">
+                    <div class="mb-4">
+                        <label class="block text-gray-700 mb-2">Email</label>
+                        <input type="email" id="parentEmail" class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500" placeholder="parent@email.com">
+                    </div>
+                    <div class="mb-6">
+                        <label class="block text-gray-700 mb-2">Password</label>
+                        <input type="password" id="parentPassword" class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500" placeholder="••••••••">
+                    </div>
+                    <button onclick="parentLogin()" class="w-full bg-green-600 hover:bg-green-700 text-white font-bold py-3 rounded-lg mb-4">Login</button>
+                    <button onclick="showParentSignup()" class="w-full bg-gray-200 hover:bg-gray-300 text-gray-800 font-bold py-3 rounded-lg">Create Account</button>
+                </div>
+
+                <div id="parentSignupForm" class="hidden">
+                    <div class="mb-4">
+                        <label class="block text-gray-700 mb-2">Email</label>
+                        <input type="email" id="signupEmail" class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500" placeholder="parent@email.com">
+                    </div>
+                    <div class="mb-4">
+                        <label class="block text-gray-700 mb-2">Password</label>
+                        <input type="password" id="signupPassword" class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500" placeholder="••••••••">
+                    </div>
+                    <div class="mb-4">
+                        <label class="block text-gray-700 mb-2">Child's Name</label>
+                        <input type="text" id="childName" class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500" placeholder="Enter child's name">
+                    </div>
+                    <div class="mb-6">
+                        <label class="block text-gray-700 mb-2">Select Plan</label>
+                        <select id="planSelect" class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500">
+                            <option value="basic">Basic Magic - $9.99/month</option>
+                            <option value="premium" selected>Premium Magic - $19.99/month</option>
+                            <option value="ultimate">Ultimate Magic - $29.99/month</option>
+                        </select>
+                    </div>
+                    <button onclick="parentSignup()" class="w-full bg-green-600 hover:bg-green-700 text-white font-bold py-3 rounded-lg mb-4">Sign Up & Pay</button>
+                    <button onclick="hideParentSignup()" class="w-full bg-gray-200 hover:bg-gray-300 text-gray-800 font-bold py-3 rounded-lg">Back to Login</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Parent Dashboard -->
+        <div id="parentDashboard" class="hidden">
+            <div class="bg-white rounded-3xl shadow-2xl p-8">
+                <div class="flex justify-between items-center mb-8">
+                    <div>
+                        <h2 class="text-3xl font-bold text-green-700">Parent Dashboard</h2>
+                        <p class="text-sm text-gray-600 mt-1">Logged in as: <span id="parentEmailDisplay" class="font-semibold">-</span></p>
+                    </div>
+                    <button onclick="logout()" class="bg-red-500 hover:bg-red-600 text-white px-6 py-2 rounded-lg">Logout</button>
+                </div>
+
+                <!-- Top Stats Cards -->
+                <div class="grid md:grid-cols-4 gap-4 mb-8">
+                    <div class="bg-gradient-to-br from-green-50 to-green-100 p-6 rounded-xl border-2 border-green-200">
+                        <h3 class="font-bold text-sm mb-2 text-green-800">💳 Current Plan</h3>
+                        <p class="text-2xl font-bold text-green-600" id="parentPlan">Premium Magic</p>
+                        <p class="text-xs text-gray-600 mt-2">Renews: Dec 31, 2024</p>
+                        <button onclick="showDashboardTab('billing')" class="mt-3 text-xs bg-green-600 hover:bg-green-700 text-white px-3 py-1 rounded-full">Manage Plan</button>
+                    </div>
+                    <div class="bg-gradient-to-br from-blue-50 to-blue-100 p-6 rounded-xl border-2 border-blue-200">
+                        <h3 class="font-bold text-sm mb-2 text-blue-800">👧 Child's Name</h3>
+                        <p class="text-xl font-bold text-blue-700" id="dashboardChildName">-</p>
+                        <p class="text-xs text-gray-600 mt-2" id="dashboardChildCode">Code: ------</p>
+                        <p class="text-xs text-gray-600 mt-1" id="dashboardElfName">Elf: Not chosen yet</p>
+                    </div>
+                    <div class="bg-gradient-to-br from-purple-50 to-purple-100 p-6 rounded-xl border-2 border-purple-200">
+                        <h3 class="font-bold text-sm mb-2 text-purple-800">📬 Total Letters</h3>
+                        <p class="text-2xl font-bold text-purple-600" id="messageCount">0</p>
+                        <p class="text-xs text-gray-600 mt-2">Letters exchanged</p>
+                        <p class="text-xs text-green-600 mt-1" id="unreadCount">0 need reply</p>
+                    </div>
+                    <div class="bg-gradient-to-br from-orange-50 to-orange-100 p-6 rounded-xl border-2 border-orange-200">
+                        <h3 class="font-bold text-sm mb-2 text-orange-800">🎁 Extras Used</h3>
+                        <p class="text-sm font-semibold text-orange-700" id="videosUsed">Videos: 0/1</p>
+                        <p class="text-sm font-semibold text-orange-700 mt-1" id="certsGenerated">Certs: 0</p>
+                        <button onclick="showDashboardTab('extras')" class="mt-2 text-xs bg-orange-600 hover:bg-orange-700 text-white px-3 py-1 rounded-full">View Extras</button>
+                    </div>
+                </div>
+
+                <!-- Tab Navigation -->
+                <div class="mb-8">
+                    <div class="flex flex-wrap gap-2 mb-4">
+                        <button onclick="showDashboardTab('messages')" id="messagesBtn" class="flex-1 min-w-[150px] bg-blue-600 text-white py-3 rounded-lg font-bold">📬 Messages</button>
+                        <button onclick="showDashboardTab('ai')" id="aiModeBtn" class="flex-1 min-w-[150px] bg-gray-300 text-gray-700 py-3 rounded-lg font-bold">🤖 AI Mode</button>
+                        <button onclick="showDashboardTab('manual')" id="manualModeBtn" class="flex-1 min-w-[150px] bg-gray-300 text-gray-700 py-3 rounded-lg font-bold">✍️ Manual Mode</button>
+                        <button onclick="showDashboardTab('extras')" id="extrasBtn" class="flex-1 min-w-[150px] bg-gray-300 text-gray-700 py-3 rounded-lg font-bold">🎁 Extras</button>
+                        <button onclick="showDashboardTab('billing')" id="billingBtn" class="flex-1 min-w-[150px] bg-gray-300 text-gray-700 py-3 rounded-lg font-bold">💳 Billing</button>
+                    </div>
+
+                    <!-- Messages Tab (NEW - Shows all messages) -->
+                    <div id="messagesTab">
+                        <div class="bg-white border-2 border-gray-200 rounded-xl p-6">
+                            <div class="flex justify-between items-center mb-4">
+                                <h3 class="font-bold text-xl">All Conversation History</h3>
+                                <span class="text-sm text-gray-600">Stored in Database: LocalStorage</span>
+                            </div>
+                            <div id="allMessagesView" class="space-y-4 max-h-[600px] overflow-y-auto">
+                                <div class="text-center py-12 text-gray-400">
+                                    <div class="text-6xl mb-4">📭</div>
+                                    <p class="text-lg font-semibold">No messages yet</p>
+                                    <p class="text-sm mt-2">Messages will appear here once your child:</p>
+                                    <ul class="text-left max-w-md mx-auto mt-3 space-y-1 text-sm">
+                                        <li>✓ Logs in with their code</li>
+                                        <li>✓ Chooses their elf</li>
+                                        <li>✓ Writes their first letter</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- AI Mode Tab -->
+                    <div id="aiModeTab" class="hidden">
+                        <div class="bg-blue-50 p-6 rounded-xl mb-4 border-2 border-blue-200">
+                            <div class="flex items-start justify-between mb-3">
+                                <div>
+                                    <h3 class="font-bold text-xl mb-2 text-blue-900">🤖 AI Auto-Response Mode</h3>
+                                    <p class="text-sm text-gray-700">Your child's elf automatically responds using AI. All responses are positive, encouraging, and age-appropriate.</p>
+                                </div>
+                                <div class="bg-green-500 text-white px-3 py-1 rounded-full text-xs font-bold">ACTIVE</div>
+                            </div>
+                            <label class="flex items-center mt-4 p-3 bg-white rounded-lg border-2 border-blue-300">
+                                <input type="checkbox" id="aiModeToggle" checked onchange="toggleAIMode()" class="mr-3 w-6 h-6">
+                                <span class="font-semibold text-blue-900">Enable AI Auto-Responses</span>
+                            </label>
+                            <div class="mt-4 p-3 bg-blue-100 rounded-lg">
+                                <p class="text-xs text-blue-800 font-semibold mb-1">How it works:</p>
+                                <ul class="text-xs text-blue-700 space-y-1">
+                                    <li>• AI reads your child's letter instantly</li>
+                                    <li>• Generates a personalized, encouraging response</li>
+                                    <li>• Reply appears in child's inbox within seconds</li>
+                                    <li>• You can view all conversations in Messages tab</li>
+                                </ul>
+                            </div>
+                        </div>
+                        <div class="bg-white border-2 border-gray-200 rounded-xl p-6">
+                            <h3 class="font-bold text-lg mb-4">Recent AI Responses (Preview)</h3>
+                            <div id="parentLetterView" class="space-y-3">
+                                <p class="text-gray-500 text-center py-8">AI responses will appear here</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Manual Mode Tab -->
+                    <div id="manualModeTab" class="hidden">
+                        <div class="bg-yellow-50 p-6 rounded-xl mb-4 border-2 border-yellow-300">
+                            <h3 class="font-bold text-xl mb-2 text-yellow-900">✍️ Manual Response Mode</h3>
+                            <p class="text-sm text-gray-700 mb-3">Take control! Read your child's letters and write responses as their magical elf pen pal.</p>
+                            <div class="p-3 bg-yellow-100 rounded-lg">
+                                <p class="text-xs text-yellow-800 font-semibold mb-1">⚠️ To use Manual Mode:</p>
+                                <ul class="text-xs text-yellow-700 space-y-1">
+                                    <li>• Disable AI Mode first (see AI Mode tab)</li>
+                                    <li>• Wait for your child to send a letter</li>
+                                    <li>• Reply as the elf using your own words</li>
+                                    <li>• Your child gets notified of your reply</li>
+                                </ul>
+                            </div>
+                        </div>
+                        <div id="manualReplySection" class="bg-white border-2 border-gray-200 rounded-xl p-6">
+                            <h3 class="font-bold text-lg mb-4">Letters Waiting for Your Reply</h3>
+                            <div id="parentManualLetters" class="space-y-4">
+                                <p class="text-gray-500 text-center py-8">No letters waiting. Turn off AI mode to reply manually.</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Extras Tab -->
+                    <div id="extrasTab" class="hidden">
+                        <div class="grid md:grid-cols-2 gap-6">
+                            <div class="bg-white border-2 border-purple-300 rounded-xl p-6">
+                                <h3 class="font-bold text-2xl mb-3 text-purple-800">🎥 Video Messages</h3>
+                                <p class="text-gray-700 mb-4">Generate personalized AI video messages from your child's elf saying their name!</p>
+                                <div class="bg-purple-50 p-4 rounded-lg mb-4 border border-purple-200">
+                                    <p class="font-bold text-purple-900 mb-2">Your Plan Includes:</p>
+                                    <p class="text-sm text-gray-700" id="videoCount">Premium: 1 video per month</p>
+                                    <p class="text-xs text-gray-600 mt-2">Used this month: <span id="videosThisMonth" class="font-bold">0/1</span></p>
+                                </div>
+                                <button onclick="purchaseVideo()" class="w-full bg-purple-600 hover:bg-purple-700 text-white py-4 rounded-lg font-bold text-lg mb-2">🎬 Generate Video Message</button>
+                                <button onclick="buyExtraVideo()" class="w-full bg-purple-400 hover:bg-purple-500 text-white py-2 rounded-lg font-semibold text-sm">Buy Extra Video - $4.99</button>
+                                <div class="mt-4 p-3 bg-purple-50 rounded text-xs text-gray-700">
+                                    <p class="font-semibold mb-1">What you get:</p>
+                                    <ul class="space-y-1">
+                                        <li>✓ Personalized video with child's name</li>
+                                        <li>✓ Elf character animation</li>
+                                        <li>✓ Custom message from you</li>
+                                        <li>✓ Download link (valid 30 days)</li>
+                                    </ul>
+                                </div>
+                            </div>
+                            <div class="bg-white border-2 border-yellow-300 rounded-xl p-6">
+                                <h3 class="font-bold text-2xl mb-3 text-yellow-800">🎖️ Printable Certificates</h3>
+                                <p class="text-gray-700 mb-4">Download beautiful PDF certificates for your child!</p>
+                                <div class="space-y-3 mb-4">
+                                    <button onclick="generateCertificate('nice')" class="w-full bg-yellow-500 hover:bg-yellow-600 text-white py-3 rounded-lg font-bold flex items-center justify-center gap-2">
+                                        <span>🌟</span> Nice List Certificate
+                                    </button>
+                                    <button onclick="generateCertificate('helper')" class="w-full bg-yellow-500 hover:bg-yellow-600 text-white py-3 rounded-lg font-bold flex items-center justify-center gap-2">
+                                        <span>🎅</span> Santa's Helper Award
+                                    </button>
+                                    <button onclick="generateCertificate('friend')" class="w-full bg-yellow-500 hover:bg-yellow-600 text-white py-3 rounded-lg font-bold flex items-center justify-center gap-2">
+                                        <span>💖</span> Elf Best Friend
+                                    </button>
+                                    <button onclick="generateCertificate('good')" class="w-full bg-yellow-500 hover:bg-yellow-600 text-white py-3 rounded-lg font-bold flex items-center justify-center gap-2">
+                                        <span>⭐</span> Good Behavior Star
+                                    </button>
+                                </div>
+                                <div class="p-3 bg-yellow-50 rounded text-xs text-gray-700">
+                                    <p class="font-semibold mb-1">Certificates include:</p>
+                                    <ul class="space-y-1">
+                                        <li>✓ Child's name & elf's name</li>
+                                        <li>✓ Beautiful Christmas designs</li>
+                                        <li>✓ Official-looking stamps</li>
+                                        <li>✓ Print-ready PDF format</li>
+                                    </ul>
+                                    <p class="text-yellow-700 font-semibold mt-2">All included in your plan! 🎁</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Billing Tab (NEW) -->
+                    <div id="billingTab" class="hidden">
+                        <div class="bg-white border-2 border-gray-200 rounded-xl p-6 mb-6">
+                            <h3 class="font-bold text-2xl mb-4 text-gray-800">💳 Billing & Subscription</h3>
+                            
+                            <div class="grid md:grid-cols-2 gap-6 mb-6">
+                                <div class="bg-green-50 p-5 rounded-xl border-2 border-green-200">
+                                    <h4 class="font-bold text-lg mb-3 text-green-800">Current Subscription</h4>
+                                    <div class="space-y-2">
+                                        <p class="text-sm"><span class="font-semibold">Plan:</span> <span id="billingPlanName" class="text-green-700 font-bold">Premium Magic</span></p>
+                                        <p class="text-sm"><span class="font-semibold">Price:</span> <span id="billingPrice" class="font-bold">$19.99/month</span></p>
+                                        <p class="text-sm"><span class="font-semibold">Next billing:</span> Dec 31, 2024</p>
+                                        <p class="text-sm"><span class="font-semibold">Status:</span> <span class="text-green-600 font-bold">✓ Active</span></p>
+                                    </div>
+                                </div>
+                                <div class="bg-blue-50 p-5 rounded-xl border-2 border-blue-200">
+                                    <h4 class="font-bold text-lg mb-3 text-blue-800">Payment Method</h4>
+                                    <div class="space-y-2">
+                                        <p class="text-sm"><span class="font-semibold">Card:</span> •••• •••• •••• 4242</p>
+                                        <p class="text-sm"><span class="font-semibold">Expires:</span> 12/2025</p>
+                                        <button onclick="updatePayment()" class="mt-3 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-sm font-semibold">Update Payment</button>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="bg-gray-50 p-5 rounded-xl border-2 border-gray-200 mb-6">
+                                <h4 class="font-bold text-lg mb-3">Upgrade or Downgrade Plan</h4>
+                                <div class="grid md:grid-cols-3 gap-4">
+                                    <div class="bg-white p-4 rounded-lg border-2 border-gray-300">
+                                        <h5 class="font-bold text-center mb-2">Basic Magic</h5>
+                                        <p class="text-2xl font-bold text-center text-green-600 mb-2">$9.99<span class="text-sm text-gray-600">/mo</span></p>
+                                        <ul class="text-xs space-y-1 mb-3">
+                                            <li>✓ Unlimited letters</li>
+                                            <li>✓ AI responses</li>
+                                            <li>✓ Daily quotes</li>
+                                        </ul>
+                                        <button onclick="changePlan('basic')" class="w-full bg-gray-300 text-gray-700 py-2 rounded font-semibold text-sm">Select</button>
+                                    </div>
+                                    <div class="bg-white p-4 rounded-lg border-4 border-green-500">
+                                        <div class="bg-green-500 text-white text-xs px-2 py-1 rounded-full inline-block mb-2">CURRENT</div>
+                                        <h5 class="font-bold text-center mb-2">Premium Magic</h5>
+                                        <p class="text-2xl font-bold text-center text-red-600 mb-2">$19.99<span class="text-sm text-gray-600">/mo</span></p>
+                                        <ul class="text-xs space-y-1 mb-3">
+                                            <li>✓ Everything in Basic</li>
+                                            <li>✓ <strong>Manual mode</strong></li>
+                                            <li>✓ 1 video/month</li>
+                                            <li>✓ Certificates</li>
+                                        </ul>
+                                        <button class="w-full bg-green-500 text-white py-2 rounded font-semibold text-sm cursor-not-allowed" disabled>Current Plan</button>
+                                    </div>
+                                    <div class="bg-white p-4 rounded-lg border-2 border-purple-400">
+                                        <h5 class="font-bold text-center mb-2">Ultimate Magic</h5>
+                                        <p class="text-2xl font-bold text-center text-purple-600 mb-2">$29.99<span class="text-sm text-gray-600">/mo</span></p>
+                                        <ul class="text-xs space-y-1 mb-3">
+                                            <li>✓ Everything Premium</li>
+                                            <li>✓ <strong>Unlimited videos</strong></li>
+                                            <li>✓ Priority support</li>
+                                        </ul>
+                                        <button onclick="changePlan('ultimate')" class="w-full bg-purple-600 hover:bg-purple-700 text-white py-2 rounded font-semibold text-sm">Upgrade</button>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="bg-red-50 p-5 rounded-xl border-2 border-red-200">
+                                <h4 class="font-bold text-lg mb-2 text-red-800">Cancel Subscription</h4>
+                                <p class="text-sm text-gray-700 mb-3">You can cancel anytime. You'll retain access until your current billing period ends.</p>
+                                <button onclick="cancelSubscription()" class="bg-red-600 hover:bg-red-700 text-white px-6 py-2 rounded-lg font-semibold">Cancel Subscription</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Child Login -->
+        <div id="childLogin" class="hidden">
+            <div class="bg-white rounded-3xl shadow-2xl p-8 max-w-md mx-auto">
+                <button onclick="showPage('kidFirstLetter')" class="mb-4 text-gray-600 hover:text-gray-800">← Back</button>
+                <h2 class="text-4xl font-bold text-center mb-6 text-red-600">🎅 Hello Little Friend! 🎅</h2>
+                <p class="text-center text-gray-700 mb-6">Ask your parent for your special code!</p>
+                
+                <div class="mb-4">
+                    <label class="block text-gray-700 mb-2 font-bold">Your Name</label>
+                    <input type="text" id="childLoginName" class="w-full px-4 py-3 border-2 rounded-lg text-lg focus:outline-none focus:ring-2 focus:ring-red-500" placeholder="Enter your name">
+                </div>
+                <div class="mb-6">
+                    <label class="block text-gray-700 mb-2 font-bold">Secret Code</label>
+                    <input type="password" id="childLoginCode" class="w-full px-4 py-3 border-2 rounded-lg text-lg focus:outline-none focus:ring-2 focus:ring-red-500" placeholder="Ask your parent!">
+                </div>
+                <button onclick="childLogin()" class="w-full bg-red-600 hover:bg-red-700 text-white font-bold py-4 rounded-lg text-xl">Enter Magic Portal! ✨</button>
+            </div>
+        </div>
+
+        <!-- Elf Selection -->
+        <div id="elfSelection" class="hidden">
+            <div class="bg-white rounded-3xl shadow-2xl p-8">
+                <h2 class="text-4xl font-bold text-center mb-4 text-red-600">🎄 Choose Your Elf Pen Pal! 🎄</h2>
+                <p class="text-center text-gray-700 mb-8 text-lg">Each elf has their own special personality! Pick the one you like best!</p>
+                
+                <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-6xl mx-auto">
+                    <!-- Jingle - Playful Boy Elf -->
+                    <div class="elf-card bg-gradient-to-br from-blue-50 to-blue-100 rounded-2xl p-6 cursor-pointer border-4 border-transparent hover:border-blue-500 hover:shadow-2xl transition-all transform hover:scale-105" onclick="selectElfPersonality('boy', 'Jingle', 'playful')">
+                        <div class="bg-blue-200 w-full h-48 rounded-xl mb-4 flex items-center justify-center text-7xl">
+                            🧝‍♂️
+                        </div>
+                        <h3 class="text-2xl font-bold text-center text-blue-800 mb-2">Jingle</h3>
+                        <div class="bg-blue-200 text-blue-800 text-xs font-bold px-3 py-1 rounded-full inline-block mb-3">Playful & Funny</div>
+                        <p class="text-sm text-gray-700 mb-2"><strong>Age:</strong> 247 years old</p>
+                        <p class="text-sm text-gray-700 mb-2"><strong>Loves:</strong> Telling jokes, building toys, playing games</p>
+                        <p class="text-sm text-gray-700"><strong>Personality:</strong> Always happy and makes everyone laugh! 😄</p>
+                    </div>
+
+                    <!-- Sparkle - Sweet Girl Elf -->
+                    <div class="elf-card bg-gradient-to-br from-pink-50 to-pink-100 rounded-2xl p-6 cursor-pointer border-4 border-transparent hover:border-pink-500 hover:shadow-2xl transition-all transform hover:scale-105" onclick="selectElfPersonality('girl', 'Sparkle', 'sweet')">
+                        <div class="bg-pink-200 w-full h-48 rounded-xl mb-4 flex items-center justify-center text-7xl">
+                            🧝‍♀️
+                        </div>
+                        <h3 class="text-2xl font-bold text-center text-pink-800 mb-2">Sparkle</h3>
+                        <div class="bg-pink-200 text-pink-800 text-xs font-bold px-3 py-1 rounded-full inline-block mb-3">Sweet & Kind</div>
+                        <p class="text-sm text-gray-700 mb-2"><strong>Age:</strong> 198 years old</p>
+                        <p class="text-sm text-gray-700 mb-2"><strong>Loves:</strong> Baking cookies, singing songs, helping others</p>
+                        <p class="text-sm text-gray-700"><strong>Personality:</strong> Super caring and always encouraging! 💖</p>
+                    </div>
+
+                    <!-- Dash - Adventurous Boy Elf -->
+                    <div class="elf-card bg-gradient-to-br from-green-50 to-green-100 rounded-2xl p-6 cursor-pointer border-4 border-transparent hover:border-green-500 hover:shadow-2xl transition-all transform hover:scale-105" onclick="selectElfPersonality('boy', 'Dash', 'adventurous')">
+                        <div class="bg-green-200 w-full h-48 rounded-xl mb-4 flex items-center justify-center text-7xl">
+                            🧝‍♂️
+                        </div>
+                        <h3 class="text-2xl font-bold text-center text-green-800 mb-2">Dash</h3>
+                        <div class="bg-green-200 text-green-800 text-xs font-bold px-3 py-1 rounded-full inline-block mb-3">Brave & Adventurous</div>
+                        <p class="text-sm text-gray-700 mb-2"><strong>Age:</strong> 312 years old</p>
+                        <p class="text-sm text-gray-700 mb-2"><strong>Loves:</strong> Exploring, sports, exciting stories</p>
+                        <p class="text-sm text-gray-700"><strong>Personality:</strong> Bold and loves adventures! 🌟</p>
+                    </div>
+
+                    <!-- Holly - Creative Girl Elf -->
+                    <div class="elf-card bg-gradient-to-br from-purple-50 to-purple-100 rounded-2xl p-6 cursor-pointer border-4 border-transparent hover:border-purple-500 hover:shadow-2xl transition-all transform hover:scale-105" onclick="selectElfPersonality('girl', 'Holly', 'creative')">
+                        <div class="bg-purple-200 w-full h-48 rounded-xl mb-4 flex items-center justify-center text-7xl">
+                            🧝‍♀️
+                        </div>
+                        <h3 class="text-2xl font-bold text-center text-purple-800 mb-2">Holly</h3>
+                        <div class="bg-purple-200 text-purple-800 text-xs font-bold px-3 py-1 rounded-full inline-block mb-3">Artistic & Creative</div>
+                        <p class="text-sm text-gray-700 mb-2"><strong>Age:</strong> 225 years old</p>
+                        <p class="text-sm text-gray-700 mb-2"><strong>Loves:</strong> Drawing, crafts, decorating</p>
+                        <p class="text-sm text-gray-700"><strong>Personality:</strong> Imaginative and artistic! 🎨</p>
+                    </div>
+
+                    <!-- Buddy - Wise Boy Elf -->
+                    <div class="elf-card bg-gradient-to-br from-orange-50 to-orange-100 rounded-2xl p-6 cursor-pointer border-4 border-transparent hover:border-orange-500 hover:shadow-2xl transition-all transform hover:scale-105" onclick="selectElfPersonality('boy', 'Buddy', 'wise')">
+                        <div class="bg-orange-200 w-full h-48 rounded-xl mb-4 flex items-center justify-center text-7xl">
+                            🧝‍♂️
+                        </div>
+                        <h3 class="text-2xl font-bold text-center text-orange-800 mb-2">Buddy</h3>
+                        <div class="bg-orange-200 text-orange-800 text-xs font-bold px-3 py-1 rounded-full inline-block mb-3">Wise & Thoughtful</div>
+                        <p class="text-sm text-gray-700 mb-2"><strong>Age:</strong> 401 years old</p>
+                        <p class="text-sm text-gray-700 mb-2"><strong>Loves:</strong> Reading, learning, sharing wisdom</p>
+                        <p class="text-sm text-gray-700"><strong>Personality:</strong> Smart and gives great advice! 📚</p>
+                    </div>
+
+                    <!-- Joy - Cheerful Girl Elf -->
+                    <div class="elf-card bg-gradient-to-br from-yellow-50 to-yellow-100 rounded-2xl p-6 cursor-pointer border-4 border-transparent hover:border-yellow-500 hover:shadow-2xl transition-all transform hover:scale-105" onclick="selectElfPersonality('girl', 'Joy', 'cheerful')">
+                        <div class="bg-yellow-200 w-full h-48 rounded-xl mb-4 flex items-center justify-center text-7xl">
+                            🧝‍♀️
+                        </div>
+                        <h3 class="text-2xl font-bold text-center text-yellow-800 mb-2">Joy</h3>
+                        <div class="bg-yellow-200 text-yellow-800 text-xs font-bold px-3 py-1 rounded-full inline-block mb-3">Happy & Energetic</div>
+                        <p class="text-sm text-gray-700 mb-2"><strong>Age:</strong> 189 years old</p>
+                        <p class="text-sm text-gray-700 mb-2"><strong>Loves:</strong> Dancing, music, celebrations</p>
+                        <p class="text-sm text-gray-700"><strong>Personality:</strong> Full of energy and joy! 🎉</p>
+                    </div>
+                </div>
+
+                <div class="text-center mt-8 p-4 bg-blue-50 rounded-xl max-w-2xl mx-auto">
+                    <p class="text-sm text-gray-700">💡 <strong>Tip:</strong> You can replace the emoji boxes above with real elf photos by updating the image URLs in the code!</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Child Dashboard -->
+        <div id="childDashboard" class="hidden">
+            <div class="bg-white rounded-3xl shadow-2xl p-6 md:p-8">
+                <div class="flex justify-between items-center mb-6">
+                    <div>
+                        <h2 class="text-3xl md:text-4xl font-bold text-red-600">Your Elf Mailbox 📬</h2>
+                        <p class="text-gray-600" id="childWelcome">Welcome back!</p>
+                    </div>
+                    <button onclick="logout()" class="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-lg text-sm">Exit</button>
+                </div>
+
+                <!-- Daily Quote -->
+                <div class="bg-gradient-to-r from-yellow-100 to-yellow-200 rounded-2xl p-6 mb-6 border-2 border-yellow-400">
+                    <h3 class="font-bold text-lg mb-2 text-yellow-800">✨ Today's Magic Message ✨</h3>
+                    <p class="text-gray-800 italic text-lg" id="dailyQuote">Loading your daily inspiration...</p>
+                </div>
+
+                <div class="grid md:grid-cols-3 gap-4 mb-6">
+                    <button onclick="showChildTab('write')" id="writeTabBtn" class="bg-green-600 text-white py-3 px-4 rounded-xl font-bold text-lg">✍️ Write Letter</button>
+                    <button onclick="showChildTab('inbox')" id="inboxTabBtn" class="bg-gray-300 text-gray-700 py-3 px-4 rounded-xl font-bold text-lg">📬 Inbox</button>
+                    <button onclick="showChildTab('fun')" id="funTabBtn" class="bg-gray-300 text-gray-700 py-3 px-4 rounded-xl font-bold text-lg">🎁 Fun Stuff</button>
+                </div>
+
+                <!-- Write Letter Tab -->
+                <div id="writeLetterTab">
+                    <div class="letter-paper rounded-2xl p-8">
+                        <h3 class="text-2xl font-bold mb-4 text-gray-800">Write to <span id="elfNameWrite">Your Elf</span></h3>
+                        <textarea id="letterContent" rows="10" class="w-full p-4 border-2 border-gray-300 rounded-xl text-lg focus:outline-none focus:ring-2 focus:ring-green-500 bg-white" placeholder="Dear Elf,&#10;&#10;How are you? I wanted to tell you about..."></textarea>
+                        <button onclick="sendLetter()" class="mt-4 bg-red-600 hover:bg-red-700 text-white font-bold py-4 px-8 rounded-xl text-xl">Send Letter to North Pole! 🎅</button>
+                    </div>
+                </div>
+
+                <!-- Inbox Tab -->
+                <div id="inboxTab" class="hidden">
+                    <h3 class="text-2xl font-bold mb-4 text-gray-800">Your Letters</h3>
+                    <div id="childInbox" class="space-y-4">
+                        <p class="text-gray-500 text-center py-8">No letters yet! Write your first letter to your elf!</p>
+                    </div>
+                </div>
+
+                <!-- Fun Stuff Tab -->
+                <div id="funTab" class="hidden">
+                    <h3 class="text-2xl font-bold mb-4 text-gray-800">Special Surprises! 🎁</h3>
+                    <div class="grid md:grid-cols-2 gap-6">
+                        <div class="bg-purple-100 rounded-xl p-6 text-center">
+                            <div class="text-6xl mb-4">🎥</div>
+                            <h4 class="font-bold text-xl mb-2">Video Messages</h4>
+                            <p class="text-gray-700 mb-4">Your elf can send you special videos!</p>
+                            <div id="videoSection">
+                                <p class="text-sm text-gray-600">Ask your parent to get video messages!</p>
+                            </div>
+                        </div>
+                        <div class="bg-yellow-100 rounded-xl p-6 text-center">
+                            <div class="text-6xl mb-4">🎖️</div>
+                            <h4 class="font-bold text-xl mb-2">Your Certificates</h4>
+                            <p class="text-gray-700 mb-4">Special awards from the North Pole!</p>
+                            <div id="certificateSection">
+                                <p class="text-sm text-gray-600">Earn certificates for being awesome!</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        // Mock Database - In production, replace with real backend (Firebase, Supabase, etc.)
+        const DB = {
+            parents: JSON.parse(localStorage.getItem('elfPenPal_parents') || '{}'),
+            children: JSON.parse(localStorage.getItem('elfPenPal_children') || '{}'),
+            letters: JSON.parse(localStorage.getItem('elfPenPal_letters') || '{}'),
+            
+            save() {
+                localStorage.setItem('elfPenPal_parents', JSON.stringify(this.parents));
+                localStorage.setItem('elfPenPal_children', JSON.stringify(this.children));
+                localStorage.setItem('elfPenPal_letters', JSON.stringify(this.letters));
+            }
+        };
+
+        // Current session
+        let currentUser = null;
+        let currentUserType = null;
+
+        // Inspirational quotes from the North Pole
+        const dailyQuotes = [
+            "Believe in yourself like we believe in magic! ✨",
+            "Every day is a gift, that's why it's called the present! 🎁",
+            "Your smile can light up the whole North Pole! 😊",
+            "Be kind, be brave, be YOU! 🌟",
+            "The best way to spread Christmas cheer is singing loud for all to hear! 🎵",
+            "You are capable of amazing things! 🌈",
+            "Dream big, little one! The sky's not the limit! 🚀",
+            "Your kindness makes the world more magical! 💖",
+            "Remember: You are loved, you are special, you are important! ⭐",
+            "Every mistake is just practice for getting it right! 🎯",
+            "Share your talents and make others smile! 🎨",
+            "Being different makes you special and wonderful! 🦄",
+            "Help others and watch the magic happen! 🤝",
+            "Your imagination can create anything! 🎪",
+            "Be a friend and you'll always have friends! 👫"
+        ];
+
+        // Elf names
+        const elfNames = {
+            boy: ['Jingle', 'Buddy', 'Twinkle', 'Dash', 'Pepper', 'Merry'],
+            girl: ['Sparkle', 'Holly', 'Joy', 'Sugar', 'Candy', 'Star']
+        };
+
+        // Initialize snowflakes
+        function createSnowflakes() {
+            const snowflakeContainer = document.getElementById('snowflakes');
+            for (let i = 0; i < 20; i++) {
+                const snowflake = document.createElement('div');
+                snowflake.className = 'snowflake';
+                snowflake.innerHTML = '❄';
+                snowflake.style.left = Math.random() * 100 + '%';
+                snowflake.style.animationDuration = (Math.random() * 3 + 2) + 's';
+                snowflake.style.animationDelay = Math.random() * 5 + 's';
+                snowflake.style.opacity = Math.random();
+                snowflakeContainer.appendChild(snowflake);
+            }
+        }
+
+        // Store first letter temporarily
+        let tempFirstLetter = '';
+
+        // Send first letter from kid
+        function sendFirstLetter() {
+            const content = document.getElementById('firstLetterContent').value;
+            
+            if (!content.trim()) {
+                alert('Please write something to your elf first! ✍️');
+                return;
+            }
+
+            // Store the letter temporarily
+            tempFirstLetter = content;
+            
+            // Show parent signup
+            showPage('parentSignup');
+        }
+
+        // Page navigation
+        function showPage(pageId) {
+            const pages = ['kidFirstLetter', 'parentSignup', 'parentLogin', 'parentDashboard', 'childLogin', 'elfSelection', 'childDashboard'];
+            pages.forEach(page => {
+                const element = document.getElementById(page);
+                if (element) {
+                    element.classList.add('hidden');
+                }
+            });
+            const targetPage = document.getElementById(pageId);
+            if (targetPage) {
+                targetPage.classList.remove('hidden');
+            }
+        }
+
+        // Parent signup/login
+        function showParentSignup() {
+            document.getElementById('parentLoginForm').classList.add('hidden');
+            document.getElementById('parentSignupForm').classList.remove('hidden');
+        }
+
+        function hideParentSignup() {
+            document.getElementById('parentLoginForm').classList.remove('hidden');
+            document.getElementById('parentSignupForm').classList.add('hidden');
+        }
+
+        function parentSignup() {
+            const email = document.getElementById('signupEmail').value;
+            const password = document.getElementById('signupPassword').value;
+            const childName = document.getElementById('childName').value;
+            const plan = document.getElementById('planSelect').value;
+
+            if (!email || !password || !childName) {
+                alert('Please fill in all fields!');
+                return;
+            }
+
+            // Create parent account
+            const parentId = 'parent_' + Date.now();
+            const childId = 'child_' + Date.now();
+            const childCode = Math.random().toString(36).substring(2, 8).toUpperCase();
+
+            DB.parents[email] = {
+                id: parentId,
+                email: email,
+                password: password,
+                plan: plan,
+                childId: childId,
+                childName: childName,
+                childCode: childCode,
+                createdAt: new Date().toISOString(),
+                aiMode: true
+            };
+
+            DB.children[childId] = {
+                id: childId,
+                name: childName,
+                code: childCode,
+                parentId: parentId,
+                elfGender: null,
+                elfName: null,
+                letters: []
+            };
+
+            DB.save();
+
+            alert(`Welcome! 🎉\n\nYour account is ready!\n\nChild's Login Code: ${childCode}\n\nKeep this code safe - your child will need it to login!\n\n(In production, payment would be processed here)`);
+            
+            // Auto login
+            currentUser = DB.parents[email];
+            currentUserType = 'parent';
+            showParentDashboard();
+        }
+
+        function parentLogin() {
+            const email = document.getElementById('parentEmail').value;
+            const password = document.getElementById('parentPassword').value;
+
+            if (DB.parents[email] && DB.parents[email].password === password) {
+                currentUser = DB.parents[email];
+                currentUserType = 'parent';
+                showParentDashboard();
+            } else {
+                alert('Invalid email or password!');
+            }
+        }
+
+        function showParentDashboard() {
+            showPage('parentDashboard');
+            const child = DB.children[currentUser.childId];
+            
+            // Update all dashboard elements
+            document.getElementById('parentEmailDisplay').textContent = currentUser.email;
+            document.getElementById('parentPlan').textContent = currentUser.plan.charAt(0).toUpperCase() + currentUser.plan.slice(1) + ' Magic';
+            document.getElementById('dashboardChildName').textContent = child.name;
+            document.getElementById('dashboardChildCode').textContent = `Code: ${child.code}`;
+            document.getElementById('dashboardElfName').textContent = child.elfName ? `Elf: ${child.elfName} ${child.elfGender === 'boy' ? '🧝‍♂️' : '🧝‍♀️'}` : 'Elf: Not chosen yet';
+            document.getElementById('messageCount').textContent = child.letters.length;
+            
+            // Update billing tab
+            const planPrices = { basic: '$9.99', premium: '$19.99', ultimate: '$29.99' };
+            document.getElementById('billingPlanName').textContent = currentUser.plan.charAt(0).toUpperCase() + currentUser.plan.slice(1) + ' Magic';
+            document.getElementById('billingPrice').textContent = planPrices[currentUser.plan] + '/month';
+            
+            // Count unreplied letters
+            const unreplied = child.letters.filter(l => l.from === 'child' && !l.replied).length;
+            document.getElementById('unreadCount').textContent = unreplied + ' need reply';
+
+            loadParentLetters();
+            loadAllMessages();
+        }
+
+        function loadParentLetters() {
+            const child = DB.children[currentUser.childId];
+            const letterView = document.getElementById('parentLetterView');
+            const manualView = document.getElementById('parentManualLetters');
+            
+            if (child.letters.length === 0) {
+                letterView.innerHTML = '<p class="text-gray-500 text-center py-8">No letters yet. Your child needs to choose their elf first!</p>';
+                manualView.innerHTML = '<p class="text-gray-500 text-center py-8">No letters waiting for reply.</p>';
+                return;
+            }
+
+            // AI Mode view - all letters
+            let aiHtml = '';
+            child.letters.forEach(letter => {
+                aiHtml += `
+                    <div class="border-2 ${letter.from === 'child' ? 'border-blue-300 bg-blue-50' : 'border-green-300 bg-green-50'} rounded-lg p-4">
+                        <div class="flex justify-between mb-2">
+                            <span class="font-bold">${letter.from === 'child' ? child.name : child.elfName}</span>
+                            <span class="text-sm text-gray-600">${new Date(letter.timestamp).toLocaleDateString()}</span>
+                        </div>
+                        <p class="text-gray-800">${letter.content}</p>
+                    </div>
+                `;
+            });
+            letterView.innerHTML = aiHtml;
+
+            // Manual mode - pending letters only
+            const pendingLetters = child.letters.filter(l => l.from === 'child' && !l.replied);
+            if (pendingLetters.length === 0 || currentUser.aiMode) {
+                manualView.innerHTML = currentUser.aiMode 
+                    ? '<p class="text-gray-500 text-center py-8">AI Mode is active. Disable it to reply manually.</p>'
+                    : '<p class="text-gray-500 text-center py-8">No letters waiting for reply.</p>';
+            } else {
+                let manualHtml = '';
+                pendingLetters.forEach((letter, idx) => {
+                    manualHtml += `
+                        <div class="border-2 border-blue-300 bg-blue-50 rounded-lg p-4 mb-4">
+                            <div class="flex justify-between mb-2">
+                                <span class="font-bold">${child.name} wrote:</span>
+                                <span class="text-sm text-gray-600">${new Date(letter.timestamp).toLocaleDateString()}</span>
+                            </div>
+                            <p class="text-gray-800 mb-4">${letter.content}</p>
+                            <textarea id="reply_${idx}" rows="4" class="w-full p-3 border-2 border-gray-300 rounded-lg mb-2" placeholder="Write your reply as ${child.elfName}..."></textarea>
+                            <button onclick="sendManualReply(${idx})" class="bg-green-600 hover:bg-green-700 text-white px-6 py-2 rounded-lg font-bold">Send Reply as ${child.elfName}</button>
+                        </div>
+                    `;
+                });
+                manualView.innerHTML = manualHtml;
+            }
+        }
+
+        function showDashboardTab(tab) {
+            document.getElementById('aiModeTab').classList.add('hidden');
+            document.getElementById('manualModeTab').classList.add('hidden');
+            document.getElementById('extrasTab').classList.add('hidden');
+
+            document.getElementById('aiModeBtn').className = 'flex-1 bg-gray-300 text-gray-700 py-3 rounded-lg font-bold';
+            document.getElementById('manualModeBtn').className = 'flex-1 bg-gray-300 text-gray-700 py-3 rounded-lg font-bold';
+            document.getElementById('extrasBtn').className = 'flex-1 bg-gray-300 text-gray-700 py-3 rounded-lg font-bold';
+
+            if (tab === 'ai') {
+                document.getElementById('aiModeTab').classList.remove('hidden');
+                document.getElementById('aiModeBtn').className = 'flex-1 bg-blue-600 text-white py-3 rounded-lg font-bold';
+            } else if (tab === 'manual') {
+                document.getElementById('manualModeTab').classList.remove('hidden');
+                document.getElementById('manualModeBtn').className = 'flex-1 bg-yellow-600 text-white py-3 rounded-lg font-bold';
+            } else {
+                document.getElementById('extrasTab').classList.remove('hidden');
+                document.getElementById('extrasBtn').className = 'flex-1 bg-purple-600 text-white py-3 rounded-lg font-bold';
+            }
+        }
+
+        function toggleAIMode() {
+            currentUser.aiMode = document.getElementById('aiModeToggle').checked;
+            DB.parents[currentUser.email].aiMode = currentUser.aiMode;
+            DB.save();
+            loadParentLetters();
+        }
+
+        function sendManualReply(idx) {
+            const child = DB.children[currentUser.childId];
+            const pendingLetters = child.letters.filter(l => l.from === 'child' && !l.replied);
+            const replyContent = document.getElementById(`reply_${idx}`).value;
+
+            if (!replyContent.trim()) {
+                alert('Please write a reply!');
+                return;
+            }
+
+            // Mark original letter as replied
+            const originalLetter = pendingLetters[idx];
+            originalLetter.replied = true;
+
+            // Add reply
+            child.letters.push({
+                from: 'elf',
+                content: replyContent,
+                timestamp: new Date().toISOString()
+            });
+
+            DB.save();
+            alert('Reply sent! Your child will see it in their inbox! 💌');
+            loadParentLetters();
+        }
+
+        // Child login
+        function childLogin() {
+            const name = document.getElementById('childLoginName').value;
+            const code = document.getElementById('childLoginCode').value.toUpperCase();
+
+            const child = Object.values(DB.children).find(c => c.code === code);
+
+            if (child && child.name.toLowerCase() === name.toLowerCase()) {
+                currentUser = child;
+                currentUserType = 'child';
+
+                if (!child.elfGender) {
+                    showPage('elfSelection');
+                } else {
+                    showChildDashboard();
+                }
+            } else {
+                alert('Wrong name or code! Ask your parent for help! 🎅');
+            }
+        }
+
+        function selectElf(gender) {
+            const elfName = elfNames[gender][Math.floor(Math.random() * elfNames[gender].length)];
+            currentUser.elfGender = gender;
+            currentUser.elfName = elfName;
+            
+            DB.children[currentUser.id].elfGender = gender;
+            DB.children[currentUser.id].elfName = elfName;
+            DB.save();
+
+            alert(`Yay! ${elfName} is so excited to be your pen pal! 🎉`);
+            showChildDashboard();
+        }
+
+        function selectElfPersonality(gender, elfName, personality) {
+            currentUser.elfGender = gender;
+            currentUser.elfName = elfName;
+            currentUser.elfPersonality = personality;
+            
+            DB.children[currentUser.id].elfGender = gender;
+            DB.children[currentUser.id].elfName = elfName;
+            DB.children[currentUser.id].elfPersonality = personality;
+            DB.save();
+
+            alert(`Yay! ${elfName} is so excited to be your pen pal! 🎉\n\n${elfName} is ${personality} and can't wait to write to you!`);
+            showChildDashboard();
+        }
+
+        function showChildDashboard() {
+            showPage('childDashboard');
+            document.getElementById('childWelcome').textContent = `Writing to: ${currentUser.elfName} ${currentUser.elfGender === 'boy' ? '🧝‍♂️' : '🧝‍♀️'}`;
+            document.getElementById('elfNameWrite').textContent = currentUser.elfName;
+            
+            // Set daily quote
+            const today = new Date().toDateString();
+            const quoteIndex = (new Date().getDate() + new Date().getMonth()) % dailyQuotes.length;
+            document.getElementById('dailyQuote').textContent = dailyQuotes[quoteIndex];
+
+            loadChildInbox();
+        }
+
+        function showChildTab(tab) {
+            document.getElementById('writeLetterTab').classList.add('hidden');
+            document.getElementById('inboxTab').classList.add('hidden');
+            document.getElementById('funTab').classList.add('hidden');
+
+            document.getElementById('writeTabBtn').className = 'bg-gray-300 text-gray-700 py-3 px-4 rounded-xl font-bold text-lg';
+            document.getElementById('inboxTabBtn').className = 'bg-gray-300 text-gray-700 py-3 px-4 rounded-xl font-bold text-lg';
+            document.getElementById('funTabBtn').className = 'bg-gray-300 text-gray-700 py-3 px-4 rounded-xl font-bold text-lg';
+
+            if (tab === 'write') {
+                document.getElementById('writeLetterTab').classList.remove('hidden');
+                document.getElementById('writeTabBtn').className = 'bg-green-600 text-white py-3 px-4 rounded-xl font-bold text-lg';
+            } else if (tab === 'inbox') {
+                document.getElementById('inboxTab').classList.remove('hidden');
+                document.getElementById('inboxTabBtn').className = 'bg-red-600 text-white py-3 px-4 rounded-xl font-bold text-lg';
+            } else {
+                document.getElementById('funTab').classList.remove('hidden');
+                document.getElementById('funTabBtn').className = 'bg-purple-600 text-white py-3 px-4 rounded-xl font-bold text-lg';
+            }
+        }
+
+        function sendLetter() {
+            const content = document.getElementById('letterContent').value;
+            
+            if (!content.trim()) {
+                alert('Write something first! 📝');
+                return;
+            }
+
+            // Add child's letter
+            currentUser.letters.push({
+                from: 'child',
+                content: content,
+                timestamp: new Date().toISOString(),
+                replied: false
+            });
+
+            DB.children[currentUser.id] = currentUser;
+            DB.save();
+
+            // Check if parent has AI mode enabled
+            const parent = DB.parents[Object.keys(DB.parents).find(email => DB.parents[email].childId === currentUser.id)];
+            
+            if (parent && parent.aiMode) {
+                // Auto-generate AI response
+                setTimeout(() => {
+                    const aiReply = generateAIResponse(content);
+                    currentUser.letters.push({
+                        from: 'elf',
+                        content: aiReply,
+                        timestamp: new Date().toISOString()
+                    });
+                    currentUser.letters[currentUser.letters.length - 2].replied = true;
+                    DB.children[currentUser.id] = currentUser;
+                    DB.save();
+                    alert(`${currentUser.elfName} replied! Check your inbox! 💌`);
+                    loadChildInbox();
+                }, 1000);
+            }
+
+            document.getElementById('letterContent').value = '';
+            alert('Letter sent to the North Pole! 🎅✨');
+            showChildTab('inbox');
+        }
+
+        function generateAIResponse(childMessage) {
+            // Simple AI-like responses based on keywords
+            const msg = childMessage.toLowerCase();
+            const responses = [];
+
+            // Greeting
+            responses.push(`Dear ${currentUser.name},\n\n`);
+
+            // Content based on keywords
+            if (msg.includes('school')) {
+                responses.push(`It sounds like you're working hard at school! I'm so proud of you! 📚 Keep learning and growing!\n\n`);
+            }
+            if (msg.includes('friend')) {
+                responses.push(`Friends are such a special gift! It makes my heart happy that you have good friends! 👫\n\n`);
+            }
+            if (msg.includes('sad') || msg.includes('upset')) {
+                responses.push(`I'm sorry you felt sad. Remember, even when clouds cover the sun, it's still shining bright! Things will get better! 🌈\n\n`);
+            }
+            if (msg.includes('happy') || msg.includes('excited')) {
+                responses.push(`Your happiness makes the whole North Pole light up! ✨ I love hearing about the things that make you smile!\n\n`);
+            }
+            if (msg.includes('christmas') || msg.includes('present')) {
+                responses.push(`The magic of Christmas is extra special when shared with wonderful children like you! 🎄\n\n`);
+            }
+
+            // Default content if no keywords matched
+            if (responses.length === 1) {
+                responses.push(`Thank you for writing to me! I love hearing from you! You're such a special friend! 💖\n\n`);
+            }
+
+            // Add encouragement
+            const encouragements = [
+                "Keep being your amazing self!",
+                "You make the world brighter!",
+                "I believe in you!",
+                "You're doing great!",
+                "Keep up the wonderful work!",
+                "You're one of a kind!"
+            ];
+            responses.push(encouragements[Math.floor(Math.random() * encouragements.length)]);
+
+            // Sign off
+            responses.push(`\n\nWith magical hugs,\n${currentUser.elfName} 🧝${currentUser.elfGender === 'boy' ? '‍♂️' : '‍♀️'}✨`);
+
+            return responses.join('');
+        }
+
+        function loadChildInbox() {
+            const inbox = document.getElementById('childInbox');
+            
+            if (currentUser.letters.length === 0) {
+                inbox.innerHTML = '<p class="text-gray-500 text-center py-8">No letters yet! Write your first letter to your elf!</p>';
+                return;
+            }
+
+            let html = '';
+            currentUser.letters.slice().reverse().forEach(letter => {
+                html += `
+                    <div class="letter-paper rounded-xl p-6 ${letter.from === 'elf' ? 'border-4 border-green-400' : ''}">
+                        <div class="flex justify-between mb-3">
+                            <span class="font-bold text-xl">${letter.from === 'child' ? 'You wrote' : `${currentUser.elfName} replied`} ${letter.from === 'elf' ? '🧝' : '✍️'}</span>
+                            <span class="text-sm text-gray-600">${new Date(letter.timestamp).toLocaleDateString()}</span>
+                        </div>
+                        <p class="text-gray-800 whitespace-pre-wrap text-lg">${letter.content}</p>
+                    </div>
+                `;
+            });
+            inbox.innerHTML = html;
+        }
+
+        function purchaseVideo() {
+            alert(`🎥 Video Message Generated!\n\n"Hi ${currentUser.name}! It's me, ${currentUser.elfName}! I'm so happy to be your pen pal! Keep being awesome!"\n\n(In production, this would generate a real AI video with the child's name)`);
+        }
+
+        function generateCertificate(type) {
+            const certificates = {
+                nice: `🎖️ OFFICIAL NICE LIST CERTIFICATE 🎖️\n\nThis certifies that ${currentUser ? DB.children[currentUser.childId].name : 'Child'} is officially on Santa's Nice List!\n\nSigned: Santa Claus & ${currentUser ? DB.children[currentUser.childId].elfName : 'Elf'}`,
+                helper: `⭐ SANTA'S HELPER CERTIFICATE ⭐\n\n${currentUser ? DB.children[currentUser.childId].name : 'Child'} is hereby recognized as an Official Santa's Helper!\n\nFor outstanding kindness and joy!`,
+                friend: `💖 ELF FRIENDSHIP CERTIFICATE 💖\n\n${currentUser ? DB.children[currentUser.childId].name : 'Child'} and ${currentUser ? DB.children[currentUser.childId].elfName : 'Elf'} are Best Friends Forever!\n\nFrom the North Pole with love!`
+            };
+            
+            alert(certificates[type] + '\n\n(In production, this would generate a beautiful PDF certificate)');
+        }
+
+        // Plan selection and signup completion
+        function selectPlan(plan) {
+            document.getElementById('selectedPlanInput').value = plan;
+            const planNames = {
+                monthly: 'Monthly - $9.99/month',
+                '3month': '3-Month - $24.99 (Save 17%)',
+                yearly: 'Yearly - $99.99 (Save 17%)',
+                lifetime: 'Lifetime Access - $249.99 one-time'
+            };
+            document.getElementById('selectedPlanDisplay').textContent = planNames[plan];
+            document.getElementById('signupFormSection').classList.remove('hidden');
+            document.getElementById('signupFormSection').scrollIntoView({ behavior: 'smooth' });
+        }
+
+        function completeSignup() {
+            const email = document.getElementById('parentSignupEmail').value;
+            const password = document.getElementById('parentSignupPassword').value;
+            const childName = document.getElementById('parentSignupChildName').value;
+            const plan = document.getElementById('selectedPlanInput').value;
+
+            if (!email || !password || !childName || !plan) {
+                alert('Please fill in all fields and select a plan!');
+                return;
+            }
+
+            // Create parent and child accounts
+            const parentId = 'parent_' + Date.now();
+            const childId = 'child_' + Date.now();
+            const childCode = Math.random().toString(36).substring(2, 8).toUpperCase();
+
+            DB.parents[email] = {
+                id: parentId,
+                email: email,
+                password: password,
+                plan: plan,
+                childId: childId,
+                childName: childName,
+                childCode: childCode,
+                createdAt: new Date().toISOString(),
+                aiMode: true
+            };
+
+            DB.children[childId] = {
+                id: childId,
+                name: childName,
+                code: childCode,
+                parentId: parentId,
+                elfGender: null,
+                elfName: null,
+                letters: tempFirstLetter ? [{
+                    from: 'child',
+                    content: tempFirstLetter,
+                    timestamp: new Date().toISOString(),
+                    replied: false
+                }] : []
+            };
+
+            DB.save();
+
+            alert(`🎉 Account Created! 🎉\n\nWelcome to Elf Pen Pal!\n\n📝 Child's Login Code: ${childCode}\n\n✨ Give this code to your child so they can:\n- Choose their elf\n- Read replies to their letter\n- Send more letters!\n\n(In production, payment would be processed via Stripe)`);
+            
+            // Clear temp letter
+            tempFirstLetter = '';
+            
+            // Auto login parent
+            currentUser = DB.parents[email];
+            currentUserType = 'parent';
+            showParentDashboard();
+        }
+
+        // Load all messages in Messages tab
+        function loadAllMessages() {
+            const child = DB.children[currentUser.childId];
+            const messagesView = document.getElementById('allMessagesView');
+            
+            if (child.letters.length === 0) {
+                messagesView.innerHTML = `
+                    <div class="text-center py-12 text-gray-400">
+                        <div class="text-6xl mb-4">📭</div>
+                        <p class="text-lg font-semibold">No messages yet</p>
+                        <p class="text-sm mt-2">Messages will appear here once your child:</p>
+                        <ul class="text-left max-w-md mx-auto mt-3 space-y-1 text-sm">
+                            <li>✓ Logs in with their code</li>
+                            <li>✓ Chooses their elf</li>
+                            <li>✓ Writes their first letter</li>
+                        </ul>
+                    </div>
+                `;
+                return;
+            }
+
+            let html = '';
+            child.letters.forEach((letter, idx) => {
+                html += `
+                    <div class="border-l-4 ${letter.from === 'child' ? 'border-blue-500 bg-blue-50' : 'border-green-500 bg-green-50'} rounded-lg p-5 shadow-sm">
+                        <div class="flex justify-between items-start mb-3">
+                            <div>
+                                <span class="font-bold text-lg">${letter.from === 'child' ? '👧 ' + child.name : '🧝 ' + child.elfName}</span>
+                                <span class="text-xs text-gray-500 ml-2">${letter.from === 'child' ? 'Child' : 'Elf Response'}</span>
+                            </div>
+                            <span class="text-sm text-gray-600">${new Date(letter.timestamp).toLocaleString()}</span>
+                        </div>
+                        <p class="text-gray-800 whitespace-pre-wrap leading-relaxed">${letter.content}</p>
+                        <div class="mt-3 text-xs text-gray-500">
+                            Database ID: letter_${idx} | Stored in: localStorage['elfPenPal_children']['${child.id}']['letters'][${idx}]
+                        </div>
+                    </div>
+                `;
+            });
+            messagesView.innerHTML = html;
+        }
+
+        // Update dashboard tab function to include new tabs
+        function showDashboardTab(tab) {
+            // Hide all tabs
+            const tabs = ['messagesTab', 'aiModeTab', 'manualModeTab', 'extrasTab', 'billingTab'];
+            tabs.forEach(t => document.getElementById(t)?.classList.add('hidden'));
+
+            // Reset all button styles
+            ['messagesBtn', 'aiModeBtn', 'manualModeBtn', 'extrasBtn', 'billingBtn'].forEach(btn => {
+                const el = document.getElementById(btn);
+                if (el) el.className = 'flex-1 min-w-[150px] bg-gray-300 text-gray-700 py-3 rounded-lg font-bold';
+            });
+
+            // Show selected tab
+            const tabMap = {
+                messages: { tab: 'messagesTab', btn: 'messagesBtn', color: 'blue-600', action: loadAllMessages },
+                ai: { tab: 'aiModeTab', btn: 'aiModeBtn', color: 'blue-600' },
+                manual: { tab: 'manualModeTab', btn: 'manualModeBtn', color: 'yellow-600' },
+                extras: { tab: 'extrasTab', btn: 'extrasBtn', color: 'purple-600' },
+                billing: { tab: 'billingTab', btn: 'billingBtn', color: 'green-600' }
+            };
+
+            if (tabMap[tab]) {
+                document.getElementById(tabMap[tab].tab).classList.remove('hidden');
+                document.getElementById(tabMap[tab].btn).className = `flex-1 min-w-[150px] bg-${tabMap[tab].color} text-white py-3 rounded-lg font-bold`;
+                if (tabMap[tab].action) tabMap[tab].action();
+            }
+        }
+
+        // Billing functions
+        function changePlan(plan) {
+            const planNames = { basic: 'Basic', premium: 'Premium', ultimate: 'Ultimate' };
+            if (confirm(`Change your plan to ${planNames[plan]} Magic?\n\n(In production, this would process the plan change via Stripe)`)) {
+                currentUser.plan = plan;
+                DB.parents[currentUser.email].plan = plan;
+                DB.save();
+                alert('Plan updated successfully! 🎉');
+                showParentDashboard();
+            }
+        }
+
+        function updatePayment() {
+            alert('💳 Update Payment Method\n\n(In production, this would open Stripe payment form to update credit card details)');
+        }
+
+        function cancelSubscription() {
+            if (confirm('⚠️ Are you sure you want to cancel your subscription?\n\nYou will retain access until the end of your billing period.')) {
+                alert('Subscription cancelled.\n\n(In production, this would cancel via Stripe and send email confirmation)');
+            }
+        }
+
+        function buyExtraVideo() {
+            if (confirm('Purchase additional video message for $4.99?')) {
+                alert('🎥 Extra Video Purchased!\n\n(In production, this would process payment via Stripe and add video credits to your account)');
+            }
+        }
+
+        function logout() {
+            currentUser = null;
+            currentUserType = null;
+            showPage('kidFirstLetter');
+        }
+
+        // Initialize app
+        window.onload = function() {
+            createSnowflakes();
+            showPage('kidFirstLetter');
+        };
+    </script>
+
+</body>
+</html>
