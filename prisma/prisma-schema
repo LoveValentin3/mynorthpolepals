@@ -1,0 +1,314 @@
+// Elf Pen-Pal Database Schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ============================================
+// USERS & AUTHENTICATION
+// ============================================
+
+model User {
+  id            String    @id @default(cuid())
+  email         String    @unique
+  password      String
+  role          UserRole  @default(PARENT)
+  name          String
+  phone         String?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+  
+  parentProfile ParentProfile?
+  kidProfiles   KidProfile[]
+  
+  @@index([email])
+}
+
+model ParentProfile {
+  id                    String   @id @default(cuid())
+  userId                String   @unique
+  user                  User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  subscriptionTier      SubscriptionTier @default(FREE)
+  subscriptionStatus    SubscriptionStatus @default(INACTIVE)
+  subscriptionId        String?  @unique
+  subscriptionStartDate DateTime?
+  subscriptionEndDate   DateTime?
+  
+  hasNiceCertificate    Boolean  @default(false)
+  hasFriendshipCert     Boolean  @default(false)
+  extraVideos           Int      @default(0)
+  physicalLetters       Int      @default(0)
+  
+  emailNotifications    Boolean  @default(true)
+  weeklyDigest          Boolean  @default(true)
+  marketingEmails       Boolean  @default(false)
+  responseMode          ResponseMode @default(AI)
+  
+  referralCode          String   @unique
+  referredBy            String?
+  referralCount         Int      @default(0)
+  referralEarnings      Float    @default(0)
+  
+  createdAt             DateTime @default(now())
+  updatedAt             DateTime @updatedAt
+  
+  payments              Payment[]
+  referrals             Referral[]
+  
+  @@index([subscriptionId])
+  @@index([referralCode])
+}
+
+model KidProfile {
+  id                String   @id @default(cuid())
+  userId            String
+  user              User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  username          String   @unique
+  name              String
+  age               Int
+  
+  selectedElfId     String?
+  selectedElf       Elf?     @relation(fields: [selectedElfId], references: [id])
+  
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+  
+  letters           Letter[]
+  videos            Video[]
+  certificates      Certificate[]
+  gameProgress      GameProgress[]
+  
+  @@index([userId])
+  @@index([selectedElfId])
+  @@index([username])
+}
+
+// ============================================
+// ELVES
+// ============================================
+
+model Elf {
+  id            String   @id @default(cuid())
+  name          String
+  gender        Gender
+  emoji         String
+  role          String
+  personality   String   @db.Text
+  likes         String   @db.Text
+  avatarUrl     String?
+  isPremium     Boolean  @default(false)
+  
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+  
+  kids          KidProfile[]
+  letters       Letter[]
+  videos        Video[]
+  
+  @@index([gender])
+  @@index([isPremium])
+}
+
+// ============================================
+// LETTERS & MESSAGING
+// ============================================
+
+model Letter {
+  id            String   @id @default(cuid())
+  kidId         String
+  kid           KidProfile @relation(fields: [kidId], references: [id], onDelete: Cascade)
+  elfId         String
+  elf           Elf      @relation(fields: [elfId], references: [id])
+  
+  content       String   @db.Text
+  isFromKid     Boolean  @default(true)
+  isAiGenerated Boolean  @default(false)
+  
+  readAt        DateTime?
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+  
+  @@index([kidId])
+  @@index([elfId])
+  @@index([createdAt])
+}
+
+// ============================================
+// VIDEOS
+// ============================================
+
+model Video {
+  id            String   @id @default(cuid())
+  kidId         String
+  kid           KidProfile @relation(fields: [kidId], references: [id], onDelete: Cascade)
+  elfId         String
+  elf           Elf      @relation(fields: [elfId], references: [id])
+  
+  title         String
+  description   String?
+  videoUrl      String
+  thumbnailUrl  String?
+  duration      Int
+  
+  viewedAt      DateTime?
+  createdAt     DateTime @default(now())
+  
+  @@index([kidId])
+  @@index([elfId])
+}
+
+// ============================================
+// CERTIFICATES
+// ============================================
+
+model Certificate {
+  id            String   @id @default(cuid())
+  kidId         String
+  kid           KidProfile @relation(fields: [kidId], references: [id], onDelete: Cascade)
+  
+  type          CertificateType
+  title         String
+  description   String?
+  imageUrl      String
+  pdfUrl        String?
+  
+  issuedAt      DateTime @default(now())
+  downloadedAt  DateTime?
+  
+  @@index([kidId])
+  @@index([type])
+}
+
+// ============================================
+// GAMES
+// ============================================
+
+model GameProgress {
+  id            String   @id @default(cuid())
+  kidId         String
+  kid           KidProfile @relation(fields: [kidId], references: [id], onDelete: Cascade)
+  
+  gameType      GameType
+  level         Int      @default(1)
+  score         Int      @default(0)
+  highScore     Int      @default(0)
+  completedAt   DateTime?
+  
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+  
+  @@unique([kidId, gameType])
+  @@index([kidId])
+}
+
+// ============================================
+// PAYMENTS & SUBSCRIPTIONS
+// ============================================
+
+model Payment {
+  id                String   @id @default(cuid())
+  parentProfileId   String
+  parentProfile     ParentProfile @relation(fields: [parentProfileId], references: [id], onDelete: Cascade)
+  
+  stripePaymentId   String   @unique
+  amount            Float
+  currency          String   @default("usd")
+  status            PaymentStatus
+  
+  subscriptionTier  SubscriptionTier?
+  addOns            Json?
+  
+  createdAt         DateTime @default(now())
+  
+  @@index([parentProfileId])
+  @@index([stripePaymentId])
+}
+
+// ============================================
+// REFERRALS
+// ============================================
+
+model Referral {
+  id                String   @id @default(cuid())
+  referrerId        String
+  referrer          ParentProfile @relation(fields: [referrerId], references: [id], onDelete: Cascade)
+  
+  referredEmail     String
+  referredUserId    String?
+  status            ReferralStatus @default(PENDING)
+  rewardAmount      Float    @default(0)
+  
+  createdAt         DateTime @default(now())
+  convertedAt       DateTime?
+  
+  @@index([referrerId])
+  @@index([referredEmail])
+}
+
+// ============================================
+// ENUMS
+// ============================================
+
+enum UserRole {
+  PARENT
+  KID
+  ADMIN
+}
+
+enum Gender {
+  BOY
+  GIRL
+}
+
+enum SubscriptionTier {
+  FREE
+  MONTHLY
+  YEARLY
+  LIFETIME
+}
+
+enum SubscriptionStatus {
+  ACTIVE
+  INACTIVE
+  CANCELLED
+  PAST_DUE
+}
+
+enum ResponseMode {
+  AI
+  PARENT
+}
+
+enum CertificateType {
+  NICE_LIST
+  FRIENDSHIP
+  BIRTHDAY
+  SPECIAL_ACHIEVEMENT
+}
+
+enum GameType {
+  SPOT_ELF
+  WORD_SEARCH
+  MEMORY_MATCH
+  PUZZLE
+}
+
+enum PaymentStatus {
+  PENDING
+  COMPLETED
+  FAILED
+  REFUNDED
+}
+
+enum ReferralStatus {
+  PENDING
+  CONVERTED
+  EXPIRED
+}
